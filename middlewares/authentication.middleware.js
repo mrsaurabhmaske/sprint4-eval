@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const authentication = (req, res, next) => {
   try {
-    const token = localStorage.getItem("token");
+    const token = req.headers.authorization;
     if (token) {
       jwt.verify(token, process.env.SECRET_CODE, (err, decoded) => {
         if (err) {
@@ -12,13 +12,14 @@ const authentication = (req, res, next) => {
             msg: "Invalid User Token...Please login again to continue;...",
           });
         } else {
+          // console.log(decoded);
           req.body.userId = decoded._id;
           req.body.userEmail = decoded.email;
           req.body.userName = decoded.name;
+          console.log(req.body);
           next();
         }
       });
-      res.end();
     } else {
       res.status(400).send({
         msg: "Error while veryfying user token...Please login again to continue;...",

@@ -4,11 +4,11 @@ const { PostModel } = require("../model/post.model");
 
 const PostRouter = express.Router();
 
-PostRouter.get("/", authentication, (req, res) => {
+PostRouter.get("/", authentication, async (req, res) => {
+  const { userEmail } = req.body;
+  console.log(userEmail);
   try {
-    const { userId } = req.body;
-    const allPosts = PostModel.find({ _id: userId });
-    console.log(allPosts);
+    const allPosts = await PostModel.find({ userEmail: userEmail });
     res.status(200).send({ msg: "Welcome to Posts section", allPosts });
   } catch (error) {
     res.status(400).send({ msg: "Error while getting posts", Error: error });
@@ -18,7 +18,7 @@ PostRouter.get("/", authentication, (req, res) => {
 PostRouter.post("/add", authentication, async (req, res) => {
   try {
     const postDetails = req.body;
-    console.log(postDetails);
+    // console.log(postDetails);
     const newPost = new PostModel(postDetails);
     await newPost.save();
     res.status(200).send({ msg: "New Post has been created!", postDetails });
